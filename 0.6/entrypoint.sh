@@ -1,10 +1,5 @@
-#!/bin/dumb-init /bin/sh
+#!/bin/sh
 set -e
-
-# Note above that we run dumb-init as PID 1 in order to reap zombie processes
-# as well as forward signals to all processes in its session. Normally, sh
-# wouldn't do either of these functions so we'd leak zombies as well as do
-# unclean termination of all our sub-processes.
 
 # You can set CONSUL_BIND_INTERFACE to the name of the interface you'd like to
 # bind to and this will look up the IP and pass the proper -bind= option along
@@ -55,7 +50,7 @@ fi
 # the Consul modes isn't selected).
 if [ "$1" = 'dev' ]; then
     shift
-    gosu consul \
+    exec gosu consul \
         consul agent \
          -dev \
          -config-dir="$CONSUL_CONFIG_DIR/local" \
@@ -64,7 +59,7 @@ if [ "$1" = 'dev' ]; then
          "$@"
 elif [ "$1" = 'client' ]; then
     shift
-    gosu consul \
+    exec gosu consul \
         consul agent \
          -data-dir="$CONSUL_DATA_DIR" \
          -config-dir="$CONSUL_CONFIG_DIR/client" \
@@ -74,7 +69,7 @@ elif [ "$1" = 'client' ]; then
          "$@"
 elif [ "$1" = 'server' ]; then
     shift
-    gosu consul \
+    exec gosu consul \
         consul agent \
          -server \
          -data-dir="$CONSUL_DATA_DIR" \

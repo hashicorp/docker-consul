@@ -40,8 +40,13 @@ fi
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
 # below.
-CONSUL_DATA_DIR=/consul/data
-CONSUL_CONFIG_DIR=/consul/config
+if [ -z "$CONSUL_DATA_DIR" ]; then
+    CONSUL_DATA_DIR=/consul/data
+fi
+
+if [ -z "$CONSUL_CONFIG_DIR" ]; then
+    CONSUL_CONFIG_DIR=/consul/config
+fi
 
 # You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
 # Consul configuration JSON without having to bind any volumes.

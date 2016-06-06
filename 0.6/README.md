@@ -1,4 +1,5 @@
 # Consul Official Image Build
+[![CircleCI](https://circleci.com/gh/unifio/docker-consul.svg?style=svg)](https://circleci.com/gh/unifio/docker-consul)
 
 The version of this hosted on [HashiCorp's Docker Hub for Consul](https://hub.docker.com/r/hashicorp/consul/)
 is built from the same source as the [Consul Official Image](https://hub.docker.com/_/consul/).

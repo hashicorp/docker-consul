@@ -74,8 +74,8 @@ elif consul --help "$1" 2>&1 | grep -q "consul $1"; then
 fi
 
 # If we are running Consul, make sure it executes as the proper user.
-if [ "$1" = 'consul' ]; then
-    set -- gosu consul "$@"
-fi
+# if [ "$1" = 'consul' ]; then
+#     set -- gosu consul "$@"
+# fi
 
 exec "$@"

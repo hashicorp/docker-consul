@@ -14,7 +14,7 @@ RUN addgroup consul && \
     adduser -S -G consul consul
 
 # Set up certificates, our base tools, and Consul.
-RUN apk add --no-cache ca-certificates gnupg openssl && \
+RUN apk add --no-cache ca-certificates gnupg openssl libcap && \
     gpg --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
@@ -31,6 +31,7 @@ RUN apk add --no-cache ca-certificates gnupg openssl && \
     gpg --batch --verify consul_${CONSUL_VERSION}_SHA256SUMS.sig consul_${CONSUL_VERSION}_SHA256SUMS && \
     grep consul_${CONSUL_VERSION}_linux_amd64.zip consul_${CONSUL_VERSION}_SHA256SUMS | sha256sum -c && \
     unzip -d /bin consul_${CONSUL_VERSION}_linux_amd64.zip && \
+    setcap 'cap_net_bind_service=+ep' /bin/consul && \
     cd /tmp && \
     rm -rf /tmp/build && \
     apk del gnupg openssl && \

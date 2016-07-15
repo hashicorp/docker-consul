@@ -1,4 +1,4 @@
-#!/bin/dumb-init /bin/sh
+#!/usr/bin/dumb-init /bin/sh
 set -e
 
 # Note above that we run dumb-init as PID 1 in order to reap zombie processes
@@ -75,7 +75,7 @@ fi
 
 # If we are running Consul, make sure it executes as the proper user.
 if [ "$1" = 'consul' ]; then
-    set -- gosu consul "$@"
+    set -- su-exec consul "$@"
 fi
 
 exec "$@"

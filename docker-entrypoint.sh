@@ -1,4 +1,4 @@
-#!/bin/dumb-init /bin/sh
+#!/bin/bash
 set -e
 
 # Note above that we run dumb-init as PID 1 in order to reap zombie processes
@@ -9,6 +9,31 @@ set -e
 # You can set CONSUL_BIND_INTERFACE to the name of the interface you'd like to
 # bind to and this will look up the IP and pass the proper -bind= option along
 # to Consul.
+
+# Get keys
+CONSUL_KEYS=$(python sfiq/get_api_key.py)
+
+if [[ $CONSUL_KEYS ]]; then
+  IFS=','; keys=($CONSUL_KEYS); unset IFS;
+  export CONSUL_ACL_TOKEN="${keys[0]}"
+  export CONSUL_ENCRYPT_KEY="${keys[1]}"
+fi
+
+if [[ $CONSUL_ACL_TOKEN ]]; then
+  sed -i -e "s/^.*acl_token.*$/\"acl_token\": \"${CONSUL_ACL_TOKEN}\",/g" /consul/config/config.json
+else
+  echo "You must set CONSUL_ACL_TOKEN environment variable to run the consul Agent container"
+  exit 1
+fi
+
+if [[ $CONSUL_ENCRYPT_KEY ]]; then
+  sed -i -e "s/^.*encrypt.*$/\"encrypt\": \"${CONSUL_ENCRYPT_KEY}\"/g" /consul/config/config.json
+else
+  echo "You must set CONSUL_ENCRYPT_KEY environment variable to run the consul Agent container"
+  exit 1
+fi
+
+
 CONSUL_BIND=
 if [ -n "$CONSUL_BIND_INTERFACE" ]; then
   CONSUL_BIND_ADDRESS=$(ip -o -4 addr list $CONSUL_BIND_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)

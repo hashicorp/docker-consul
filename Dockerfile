@@ -36,6 +36,11 @@ RUN apk add --no-cache ca-certificates gnupg openssl && \
     apk del gnupg openssl && \
     rm -rf /root/.gnupg
 
+RUN apk add --update \
+	python \
+	python-dev \
+	py-pip 
+
 # The /consul/data dir is used by Consul to store state. The agent will be started
 # with /consul/config as the configuration directory so you can add additional
 # config files in that location.
@@ -58,6 +63,13 @@ EXPOSE 8301 8301/udp 8302 8302/udp
 # CLI, HTTP, and DNS (both TCP and UDP) are the primary interfaces that applications
 # use to interact with Consul.
 EXPOSE 8400 8500 8600 8600/udp
+
+ARG BUILD_NUMBER
+COPY ./sfiq/requirement_internal.txt ./sfiq/requirement_internal_${BUILD_NUMBER}.txt
+RUN pip install -r ./sfiq/requirement_internal_${BUILD_NUMBER}.txt
+
+# Copy get_api_key to read tokens from crypter
+COPY ./sfiq/get_api_key.py ./sfiq/
 
 # Consul doesn't need root privileges so we run it as the consul user from the
 # entry point script. The entry point script also uses dumb-init as the top-level

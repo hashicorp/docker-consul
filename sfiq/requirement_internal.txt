@@ -1,0 +1,6 @@
+# config for resolving deps through artifactory
+# `py-dev` is a read-only user
+--index-url https://py-dev:py-dev@relateiq.artifactoryonline.com/relateiq/api/pypi/pypi/simple
+
+# in-house deps
+crypy~=0.1

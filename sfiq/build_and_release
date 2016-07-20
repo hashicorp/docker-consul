@@ -24,6 +24,6 @@ docker build \
     .
 popd
 
-#if [ "$push_to_registry" = true ]; then
-#    docker push $image_name:$tag
-#fi
+if [ "$push_to_registry" = true ]; then
+    docker push $image_name:$tag
+fi

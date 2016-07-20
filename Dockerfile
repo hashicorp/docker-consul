@@ -37,6 +37,7 @@ RUN apk add --no-cache ca-certificates gnupg openssl && \
     rm -rf /root/.gnupg
 
 RUN apk add --update \
+	bash \
 	python \
 	python-dev \
 	py-pip 

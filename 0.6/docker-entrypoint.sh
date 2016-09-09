@@ -36,6 +36,22 @@ if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
   echo "==> Found address '$CONSUL_CLIENT_ADDRESS' for interface '$CONSUL_CLIENT_INTERFACE', setting client option..."
 fi
 
+# You can set CONSUL_ADVERTISE_INTERFACE to the name of the interface you'd like to
+# bind client intefaces (HTTP, DNS, and RPC) to and this will look up the IP and
+# pass the proper -client= option along to Consul.
+CONSUL_ADVERTISE=
+if [ -n "$CONSUL_ADVERTISE_INTERFACE" ]; then
+  CONSUL_ADVERTISE_ADDRESS=$(ip -o -4 addr list $CONSUL_ADVERTISE_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
+  if [ -z "$CONSUL_ADVERTISE_ADDRESS" ]; then
+    echo "Could not find IP for interface '$CONSUL_ADVERTISE_INTERFACE', exiting"
+    exit 1
+  fi
+
+  CONSUL_ADVERTISE="-advertise=$CONSUL_ADVERTISE_ADDRESS"
+  echo "==> Found address '$CONSUL_ADVERTISE_ADDRESS' for interface '$CONSUL_ADVERTISE_INTERFACE', setting advertise option..."
+fi
+
+
 # CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
@@ -62,6 +78,7 @@ if [ "$1" = 'agent' ]; then
         -data-dir="$CONSUL_DATA_DIR" \
         -config-dir="$CONSUL_CONFIG_DIR" \
         $CONSUL_BIND \
+        $CONSUL_ADVERTISE \
         $CONSUL_CLIENT \
         "$@"
 elif [ "$1" = 'version' ]; then

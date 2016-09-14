@@ -31,7 +31,6 @@ RUN apk add --no-cache ca-certificates curl gnupg libcap openssl && \
     gpg --batch --verify consul_${CONSUL_VERSION}_SHA256SUMS.sig consul_${CONSUL_VERSION}_SHA256SUMS && \
     grep consul_${CONSUL_VERSION}_linux_amd64.zip consul_${CONSUL_VERSION}_SHA256SUMS | sha256sum -c && \
     unzip -d /bin consul_${CONSUL_VERSION}_linux_amd64.zip && \
-    setcap 'cap_net_bind_service=+ep' /bin/consul && \
     cd /tmp && \
     rm -rf /tmp/build && \
     apk del gnupg openssl && \

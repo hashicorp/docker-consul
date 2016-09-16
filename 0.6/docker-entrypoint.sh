@@ -37,8 +37,8 @@ if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
 fi
 
 # You can set CONSUL_ADVERTISE_INTERFACE to the name of the interface you'd like to
-# bind client intefaces (HTTP, DNS, and RPC) to and this will look up the IP and
-# pass the proper -client= option along to Consul.
+# advertise to other consul members and this will look up the IP and
+# pass the proper -advertise= option along to Consul.
 CONSUL_ADVERTISE=
 if [ -n "$CONSUL_ADVERTISE_INTERFACE" ]; then
   CONSUL_ADVERTISE_ADDRESS=$(ip -o -4 addr list $CONSUL_ADVERTISE_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)

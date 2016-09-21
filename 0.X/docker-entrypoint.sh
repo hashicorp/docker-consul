@@ -77,10 +77,10 @@ fi
 if [ "$1" = 'consul' ]; then
     # If the data or config dirs are bind mounted then chown them.
     # Note: This checks for root ownership as that's the most common case.
-    if [ "$(stat -c %u /consul/data)" = '0' ]; then
+    if [ "$(stat -c %u /consul/data)" != "$(id -u consul)" ]; then
         chown consul:consul /consul/data
     fi
-    if [ "$(stat -c %u /consul/config)" = '0' ]; then
+    if [ "$(stat -c %u /consul/config)" != "$(id -u consul)" ]; then
         chown consul:consul /consul/config
     fi
 

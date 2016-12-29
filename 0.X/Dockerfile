@@ -1,4 +1,4 @@
-FROM alpine:3.4
+FROM alpine:3.5
 MAINTAINER James Phillips <james@hashicorp.com> (@slackpad)
 
 # This is the release of Consul to pull in.

@@ -74,8 +74,24 @@ elif consul --help "$1" 2>&1 | grep -q "consul $1"; then
 fi
 
 # If we are running Consul, make sure it executes as the proper user.
-# if [ "$1" = 'consul' ]; then
-#     set -- gosu consul "$@"
-# fi
+if [ "$1" = 'consul' ]; then
+    # If the data or config dirs are bind mounted then chown them.
+    # Note: This checks for root ownership as that's the most common case.
+    if [ "$(stat -c %u /consul/data)" != "$(id -u consul)" ]; then
+        chown consul:consul /consul/data
+    fi
+    if [ "$(stat -c %u /consul/config)" != "$(id -u consul)" ]; then
+        chown consul:consul /consul/config
+    fi
+
+    # If requested, set the capability to bind to privileged ports before
+    # we drop to the non-root user. Note that this doesn't work with all
+    # storage drivers (it won't work with AUFS).
+    if [ ! -z ${CONSUL_ALLOW_PRIVILEGED_PORTS+x} ]; then
+        setcap "cap_net_bind_service=+ep" /bin/consul
+    fi
+
+    set -- gosu consul "$@"
+fi
 
 exec "$@"

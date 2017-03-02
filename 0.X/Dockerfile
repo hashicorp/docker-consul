@@ -46,6 +46,9 @@ RUN mkdir -p /consul/data && \
     mkdir -p /consul/config && \
     chown -R consul:consul /consul
 
+# setuid must be set in busybox in order to be executed by consul users (if not ping doesn't work)
+RUN chmod 4755 /bin/busybox
+
 # Expose the consul data directory as a volume since there's mutable state in there.
 VOLUME /consul/data
 

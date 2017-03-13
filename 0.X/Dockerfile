@@ -1,5 +1,5 @@
-FROM alpine:3.4
-MAINTAINER James Phillips <james@hashicorp.com> (@slackpad)
+FROM ubuntu
+MAINTAINER Alvaro Gonzalez <kortatu@gmail.com> (@epiclabs.io)
 
 # This is the release of Consul to pull in.
 ENV CONSUL_VERSION=0.7.5
@@ -14,29 +14,25 @@ ENV HASHICORP_RELEASES=https://releases.hashicorp.com
 # Create a consul user and group first so the IDs get set the same way, even as
 # the rest of this may change over time.
 RUN addgroup consul && \
-    adduser -S -G consul consul
+    adduser  --system --group consul
 
 # Set up certificates, our base tools, and Consul.
-RUN apk add --no-cache ca-certificates curl gnupg libcap openssl && \
-    gpg --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
+RUN apt-get update && apt-get install -y curl gnupg libcap2 openssl wget unzip && \    
     mkdir -p /tmp/build && \
     cd /tmp/build && \
     wget ${HASHICORP_RELEASES}/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip && \
     wget ${HASHICORP_RELEASES}/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS && \
     wget ${HASHICORP_RELEASES}/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS.sig && \
-    gpg --batch --verify docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS.sig docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS && \
     grep ${DOCKER_BASE_VERSION}_linux_amd64.zip docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS | sha256sum -c && \
     unzip docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip && \
     cp bin/gosu bin/dumb-init /bin && \
     wget ${HASHICORP_RELEASES}/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip && \
     wget ${HASHICORP_RELEASES}/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_SHA256SUMS && \
     wget ${HASHICORP_RELEASES}/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_SHA256SUMS.sig && \
-    gpg --batch --verify consul_${CONSUL_VERSION}_SHA256SUMS.sig consul_${CONSUL_VERSION}_SHA256SUMS && \
     grep consul_${CONSUL_VERSION}_linux_amd64.zip consul_${CONSUL_VERSION}_SHA256SUMS | sha256sum -c && \
     unzip -d /bin consul_${CONSUL_VERSION}_linux_amd64.zip && \
     cd /tmp && \
-    rm -rf /tmp/build && \
-    apk del gnupg openssl && \
+    rm -rf /tmp/build && \    
     rm -rf /root/.gnupg
 
 # The /consul/data dir is used by Consul to store state. The agent will be started
@@ -45,6 +41,9 @@ RUN apk add --no-cache ca-certificates curl gnupg libcap openssl && \
 RUN mkdir -p /consul/data && \
     mkdir -p /consul/config && \
     chown -R consul:consul /consul
+
+# setuid must be set in busybox in order to be executed by consul users (if not ping doesn't work)
+#RUN chmod 4755 /bin/busybox
 
 # Expose the consul data directory as a volume since there's mutable state in there.
 VOLUME /consul/data

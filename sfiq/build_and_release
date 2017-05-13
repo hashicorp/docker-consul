@@ -1,0 +1,29 @@
+#!/bin/bash -xe
+
+prj_dir="$(dirname $( cd "$( dirname "$0" )" && pwd ))"
+
+# docker namespace, that is private docker registry FQDN + repo
+docker_ns=docker.amz.relateiq.com/ops
+image_name="$docker_ns/riq-consul-agent"
+
+tag=latest
+build_number=latest
+push_to_registry=false
+while getopts "t:b:P" opt; do
+    case $opt in
+        t) tag=$OPTARG ;;
+        b) build_number=$OPTARG ;;
+        P) push_to_registry=true ;;
+    esac
+done
+
+pushd $prj_dir
+docker build \
+    --build-arg BUILD_NUMBER=$build_number \
+    -t $image_name:$tag \
+    .
+popd
+
+if [ "$push_to_registry" = true ]; then
+    docker push $image_name:$tag
+fi

@@ -18,7 +18,7 @@ RUN addgroup consul && \
 
 # Set up certificates, our base tools, and Consul.
 RUN apk add --no-cache ca-certificates curl gnupg libcap openssl && \
-    gpg --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
+    gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
     wget ${HASHICORP_RELEASES}/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip && \

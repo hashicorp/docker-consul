@@ -26,6 +26,10 @@ fi
 # pass the proper -client= option along to Consul.
 CONSUL_CLIENT=
 if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
+  if [ -n "$CONSUL_CLIENT_ADDRESS" ]; then
+    echo "Configured both '$CONSUL_CLIENT_INTERFACE' and '$CONSUL_CLIENT_ADDRESS', exiting"
+    exit 1
+  fi
   CONSUL_CLIENT_ADDRESS=$(ip -o -4 addr list $CONSUL_CLIENT_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
   if [ -z "$CONSUL_CLIENT_ADDRESS" ]; then
     echo "Could not find IP for interface '$CONSUL_CLIENT_INTERFACE', exiting"
@@ -36,12 +40,34 @@ if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
   echo "==> Found address '$CONSUL_CLIENT_ADDRESS' for interface '$CONSUL_CLIENT_INTERFACE', setting client option..."
 fi
 
+if [ -n "$CONSUL_CLIENT_ADDRESS" ]; then
+  if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
+    echo "Configured both '$CONSUL_CLIENT_INTERFACE' and '$CONSUL_CLIENT_ADDRESS', exiting"
+    exit 1
+  fi
+  CONSUL_CLIENT="-client=$CONSUL_CLIENT_ADDRESS"
+  echo "==> Configured address '$CONSUL_CLIENT_ADDRESS', setting client option..."
+fi
+
 # CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
 # below.
 CONSUL_DATA_DIR=/consul/data
 CONSUL_CONFIG_DIR=/consul/config
+
+# If no explicit node name was set we use the hostname
+if [ -z "$CONSUL_NODE_NAME" ]; then
+  # If configured CONSUL_SHORT_DEFAULT_NODE_NAME=true we use the short hostname
+  if [ "$CONSUL_SHORT_DEFAULT_NODE_NAME" = "true" ]; then
+    CONSUL_NODE_NAME=$(hostname -s)
+  else
+  	CONSUL_NODE_NAME=$(hostname -f)
+  fi
+fi
+
+CONSUL_NODE="-node=$CONSUL_NODE_NAME"
+echo "==> Configured node name '$CONSUL_NODE_NAME', setting client option..."
 
 # You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
 # Consul configuration JSON without having to bind any volumes.
@@ -61,6 +87,7 @@ if [ "$1" = 'agent' ]; then
     set -- consul agent \
         -data-dir="$CONSUL_DATA_DIR" \
         -config-dir="$CONSUL_CONFIG_DIR" \
+        $CONSUL_NODE \
         $CONSUL_BIND \
         $CONSUL_CLIENT \
         "$@"

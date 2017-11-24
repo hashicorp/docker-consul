@@ -57,6 +57,18 @@ fi
 
 # Look for Consul subcommands.
 if [ "$1" = 'agent' ]; then
+    args="$@"
+
+    if [ ! -z "${args##*$-config-dir*}" ]; then
+        echo "Warn: consul ran with -config-dir. docker-consul's official image does not support this parameter by default. You may encounter permission issues.
+      See: https://github.com/hashicorp/docker-consul/issues/74"
+    fi
+
+    if [ ! -z "${args##*$-data-dir*}" ]; then
+        echo "Warn: consul ran with -data-dir. docker-consul's official image does not support this parameter by default. You may encounter permission issues.
+      See: https://github.com/hashicorp/docker-consul/issues/74"
+    fi
+
     shift
     set -- consul agent \
         -data-dir="$CONSUL_DATA_DIR" \

@@ -92,7 +92,7 @@ if [ "$1" = 'consul' ]; then
         setcap "cap_net_bind_service=+ep" /bin/consul
     fi
 
-    set -- exec su-exec consul:consul "$@"
+    set -- su-exec consul:consul "$@"
 fi
 
 exec "$@"

@@ -14,7 +14,7 @@ RUN addgroup consul && \
 
 # Set up certificates, base tools, and Consul.
 RUN apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec && \
-    gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
+    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
     wget ${HASHICORP_RELEASES}/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip && \

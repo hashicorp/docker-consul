@@ -76,13 +76,16 @@ fi
 
 # If we are running Consul, make sure it executes as the proper user.
 if [ "$1" = 'consul' ]; then
-    # If the data or config dirs are bind mounted then chown them.
-    # Note: This checks for root ownership as that's the most common case.
-    if [ "$(stat -c %u /consul/data)" != "$(id -u consul)" ]; then
-        chown consul:consul /consul/data
-    fi
-    if [ "$(stat -c %u /consul/config)" != "$(id -u consul)" ]; then
-        chown consul:consul /consul/config
+    # chown only works if user is root
+    if [ "$(id -u)" = "0" ];  then 
+        # If the data or config dirs are bind mounted then chown them.
+        # Note: This checks for root ownership as that's the most common case.
+        if [ "$(stat -c %u /consul/data)" != "$(id -u consul)" ]; then
+            chown consul:consul /consul/data
+        fi
+        if [ "$(stat -c %u /consul/config)" != "$(id -u consul)" ]; then
+            chown consul:consul /consul/config
+        fi
     fi
 
     # If requested, set the capability to bind to privileged ports before
@@ -92,7 +95,10 @@ if [ "$1" = 'consul' ]; then
         setcap "cap_net_bind_service=+ep" /bin/consul
     fi
 
-    set -- su-exec consul:consul "$@"
+    # set su-exec only works if user is root
+    if [ "$(id -u)" = "0" ];  then 
+        set -- su-exec consul:consul "$@"
+    fi
 fi
 
 exec "$@"

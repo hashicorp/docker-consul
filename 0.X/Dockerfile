@@ -1,8 +1,8 @@
 FROM alpine:3.7
-MAINTAINER Preetha Appan <preetha@hashicorp.com> (@preetapan)
+MAINTAINER Consul Team <consul@hashicorp.com>
 
 # This is the release of Consul to pull in.
-ENV CONSUL_VERSION=1.4.0-rc1
+ENV CONSUL_VERSION=1.3.1
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com

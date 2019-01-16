@@ -2,7 +2,7 @@ FROM alpine:3.7
 MAINTAINER Consul Team <consul@hashicorp.com>
 
 # This is the release of Consul to pull in.
-ENV CONSUL_VERSION=1.4.0
+ENV CONSUL_VERSION=1.2.4
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com
@@ -14,7 +14,7 @@ RUN addgroup consul && \
 
 # Set up certificates, base tools, and Consul.
 RUN set -eux && \
-    apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec iputils && \
+    apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec iputils jq && \
     BUILD_GPGKEY=91A6E7F85D05C65630BEF18951852D87348FFC4C; \
     found=''; \
     for server in \

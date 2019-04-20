@@ -41,15 +41,7 @@ fi
 # Default find docker.sock in /var/run/ if exist set permission
 # Use -e CONSUL_DOCKER_API <your-file> if want use with environment
 if [ -n "$CONSUL_DOCKER_API" ] || [ -S /var/run/docker.sock ]; then
-  docker_group=$(getent group docker | sed 's/:.*//')
-
-  if [ -z "$docker_group" ]; then
-    echo "==> Create docker group for access to docker API"
-    addgroup docker
-  fi
-
-  chgrp docker ${CONSUL_DOCKER_API:-/var/run/docker.sock}
-  adduser consul docker
+  chgrp consul ${CONSUL_DOCKER_API:-/var/run/docker.sock}
 fi
 
 # CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The

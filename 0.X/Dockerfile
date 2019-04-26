@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.9
 MAINTAINER Consul Team <consul@hashicorp.com>
 
 # This is the release of Consul to pull in.

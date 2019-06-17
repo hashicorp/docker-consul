@@ -75,7 +75,7 @@ elif consul --help "$1" 2>&1 | grep -q "consul $1"; then
 fi
 
 # If we are running Consul, make sure it executes as the proper user.
-if [ "$1" = 'consul' ]; then
+if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
     # If the data or config dirs are bind mounted then chown them.
     # Note: This checks for root ownership as that's the most common case.
     if [ "$(stat -c %u /consul/data)" != "$(id -u consul)" ]; then

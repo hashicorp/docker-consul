@@ -2,7 +2,7 @@ FROM alpine:3.9
 MAINTAINER Consul Team <consul@hashicorp.com>
 
 # This is the release of Consul to pull in.
-ENV CONSUL_VERSION=1.5.1
+ENV CONSUL_VERSION=1.5.2
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com

@@ -1,21 +1,22 @@
-FROM alpine:3.9
+FROM alpine:3.10
 MAINTAINER Consul Team <consul@hashicorp.com>
-
-# This is the release of Consul to pull in.
-ENV CONSUL_VERSION=1.6.0
-
-# This is the location of the releases.
-ENV HASHICORP_RELEASES=https://releases.hashicorp.com
 
 # Create a consul user and group first so the IDs get set the same way, even as
 # the rest of this may change over time.
 RUN addgroup consul && \
     adduser -S -G consul consul
 
-# Set up certificates, base tools, and Consul.
+# This is the location of the releases.
+ARG HASHICORP_RELEASES=https://releases.hashicorp.com
+# This is Hashicorp's PGP key
+ARG HASHICORP_PGP_KEY=91A6E7F85D05C65630BEF18951852D87348FFC4C
+# This is the release of Consul to pull in.
+ARG CONSUL_VERSION=1.6.0
+
+# Set up Consul.
 RUN set -eux && \
-    apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec iputils jq && \
-    gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
+    apk add --no-cache dumb-init gnupg libcap su-exec jq && \
+    gpg --keyserver hkps://hkps.pool.sks-keyservers.net:443 --recv-keys "$HASHICORP_PGP_KEY" && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
     apkArch="$(apk --print-arch)" && \
@@ -32,18 +33,17 @@ RUN set -eux && \
     gpg --batch --verify consul_${CONSUL_VERSION}_SHA256SUMS.sig consul_${CONSUL_VERSION}_SHA256SUMS && \
     grep consul_${CONSUL_VERSION}_linux_${consulArch}.zip consul_${CONSUL_VERSION}_SHA256SUMS | sha256sum -c && \
     unzip -d /bin consul_${CONSUL_VERSION}_linux_${consulArch}.zip && \
-    cd /tmp && \
-    rm -rf /tmp/build && \
-    apk del gnupg openssl && \
-    rm -rf /root/.gnupg && \
+# Assign a linux capability to the Consul binary that allows it to bind to low ports if needed
+    setcap 'cap_net_bind_service=+ep' $(which consul) &&\
+    rm -rf /root/.gnupg /tmp/build && \
+    apk del --no-cache --purge gnupg libcap && \
 # tiny smoke test to ensure the binary we downloaded runs
     consul version
 
 # The /consul/data dir is used by Consul to store state. The agent will be started
 # with /consul/config as the configuration directory so you can add additional
 # config files in that location.
-RUN mkdir -p /consul/data && \
-    mkdir -p /consul/config && \
+RUN mkdir -p -m 770 /consul/data /consul/config && \
     chown -R consul:consul /consul
 
 # set up nsswitch.conf for Go's "netgo" implementation which is used by Consul,

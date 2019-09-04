@@ -78,11 +78,11 @@ fi
 if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
     # If the data or config dirs are bind mounted then chown them.
     # Note: This checks for root ownership as that's the most common case.
-    if [ "$(stat -c %u /consul/data)" != "$(id -u consul)" ]; then
-        chown consul:consul /consul/data
+    if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "$(id -u consul)" ]; then
+        chown consul:consul "$CONSUL_DATA_DIR"
     fi
-    if [ "$(stat -c %u /consul/config)" != "$(id -u consul)" ]; then
-        chown consul:consul /consul/config
+    if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u consul)" ]; then
+        chown consul:consul "$CONSUL_CONFIG_DIR"
     fi
 
     # If requested, set the capability to bind to privileged ports before

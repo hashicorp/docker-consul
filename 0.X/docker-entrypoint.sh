@@ -41,8 +41,8 @@ fi
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
 # below.
-CONSUL_DATA_DIR=/consul/data
-CONSUL_CONFIG_DIR=/consul/config
+CONSUL_DATA_DIR=${CONSUL_DATA_DIR:=/consul/data}
+CONSUL_CONFIG_DIR=${CONSUL_CONFIG_DIR:=/consul/config}
 
 # You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
 # Consul configuration JSON without having to bind any volumes.
@@ -79,10 +79,10 @@ if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
     # If the data or config dirs are bind mounted then chown them.
     # Note: This checks for root ownership as that's the most common case.
     if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "$(id -u consul)" ]; then
-        chown consul:consul "$CONSUL_DATA_DIR"
+        chown consul:consul -R "$CONSUL_DATA_DIR"
     fi
     if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u consul)" ]; then
-        chown consul:consul "$CONSUL_CONFIG_DIR"
+        chown consul:consul -R "$CONSUL_CONFIG_DIR"
     fi
 
     # If requested, set the capability to bind to privileged ports before

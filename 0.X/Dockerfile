@@ -21,7 +21,7 @@ RUN set -eux && \
     apkArch="$(apk --print-arch)" && \
     case "${apkArch}" in \
         aarch64) consulArch='arm64' ;; \
-        armhf) consulArch='arm' ;; \
+        armhf) consulArch='armhfv6' ;; \
         x86) consulArch='386' ;; \
         x86_64) consulArch='amd64' ;; \
         *) echo >&2 "error: unsupported architecture: ${apkArch} (see ${HASHICORP_RELEASES}/consul/${CONSUL_VERSION}/)" && exit 1 ;; \

@@ -35,6 +35,7 @@ RUN set -eux && \
     unzip -d /bin consul_${CONSUL_VERSION}_linux_${consulArch}.zip && \
     cd /tmp && \
     rm -rf /tmp/build && \
+    gpgconf --kill all && \
     apk del gnupg openssl && \
     rm -rf /root/.gnupg && \
 # tiny smoke test to ensure the binary we downloaded runs

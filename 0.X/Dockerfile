@@ -1,5 +1,5 @@
-FROM alpine:3.9
-MAINTAINER Consul Team <consul@hashicorp.com>
+FROM alpine:3.12
+LABEL maintainer="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
 ENV CONSUL_VERSION=1.8.0-rc1

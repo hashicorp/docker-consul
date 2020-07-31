@@ -1,5 +1,5 @@
 FROM alpine:3.12
-LABEL maintainer="Consul Team <consul@hashicorp.com>"
+LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
 ENV CONSUL_VERSION=1.8.1

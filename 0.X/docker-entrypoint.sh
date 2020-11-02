@@ -43,6 +43,15 @@ fi
 # below.
 CONSUL_DATA_DIR=/consul/data
 CONSUL_CONFIG_DIR=/consul/config
+CONSUL_EXTRA_CONFIG_DIR=/consul/extra
+
+# CONSUL_EXTRA_CONFIG is a base64 encoded tar file. It's contents are extracted 
+# and can be referenced by configuration provided via CONSUL_LOCAL_CONFIG.
+# The purpose
+if [ -n "$CONSUL_EXTRA_CONFIG" ]; then
+  mkdir -p "$CONSUL_EXTRA_CONFIG_DIR"
+  echo "$CONSUL_EXTRA_CONFIG" | base64 -d | tar --extract --verbose --overwrite --directory "$CONSUL_EXTRA_CONFIG_DIR" --file -
+fi
 
 # You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
 # Consul configuration JSON without having to bind any volumes.

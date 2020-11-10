@@ -65,11 +65,11 @@ fi
 if [ "$1" = 'agent' ]; then
   shift
   set -- consul agent \
-      -data-dir="$CONSUL_DATA_DIR" \
-      -config-dir="$CONSUL_CONFIG_DIR" \
-      $CONSUL_BIND \
-      $CONSUL_CLIENT \
-      "$@"
+    -data-dir="$CONSUL_DATA_DIR" \
+    -config-dir="$CONSUL_CONFIG_DIR" \
+    $CONSUL_BIND \
+    $CONSUL_CLIENT \
+    "$@"
 elif [ "$1" = 'version' ]; then
   # This needs a special case because there's no help output.
   set -- consul "$@"
@@ -82,21 +82,21 @@ fi
 # If we are running Consul, make sure it executes as the proper user.
 if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
   # Allow to setup user and group via envrironment
-  if [ -z "$CONSUL_USER" ]; then
-    CONSUL_USER="consul"
+  if [ -z "$CONSUL_UID" ]; then
+    CONSUL_UID="$(id -u consul)"
   fi
 
-  if [ -z "$CONSUL_GROUP" ]; then
-    CONSUL_GROUP="consul"
+  if [ -z "$CONSUL_GID" ]; then
+    CONSUL_GID="$(id -g consul)"
   fi
 
   # If the data or config dirs are bind mounted then chown them.
   # Note: This checks for root ownership as that's the most common case.
-  if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "$(id -u ${CONSUL_USER})" ]; then
-    chown ${CONSUL_USER}:${CONSUL_GROUP} "$CONSUL_DATA_DIR"
+  if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "${CONSUL_UID}" ]; then
+    chown ${CONSUL_UID}:${CONSUL_GID} "$CONSUL_DATA_DIR"
   fi
-  if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u ${CONSUL_USER})" ]; then
-    chown ${CONSUL_USER}:${CONSUL_GROUP} "$CONSUL_CONFIG_DIR"
+  if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "${CONSUL_UID}" ]; then
+    chown ${CONSUL_UID}:${CONSUL_GID} "$CONSUL_CONFIG_DIR"
   fi
 
   # If requested, set the capability to bind to privileged ports before
@@ -106,7 +106,7 @@ if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
     setcap "cap_net_bind_service=+ep" /bin/consul
   fi
 
-  set -- su-exec ${CONSUL_USER}:${CONSUL_GROUP} "$@"
+  set -- su-exec ${CONSUL_UID}:${CONSUL_GID} "$@"
 fi
 
 exec "$@"

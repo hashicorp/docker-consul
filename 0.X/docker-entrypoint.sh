@@ -92,10 +92,10 @@ if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
 
   # If the data or config dirs are bind mounted then chown them.
   # Note: This checks for root ownership as that's the most common case.
-  if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "$(id -u consul)" ]; then
+  if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "$(id -u ${CONSUL_USER})" ]; then
     chown ${CONSUL_USER}:${CONSUL_GROUP} "$CONSUL_DATA_DIR"
   fi
-  if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u consul)" ]; then
+  if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u ${CONSUL_USER})" ]; then
     chown ${CONSUL_USER}:${CONSUL_GROUP} "$CONSUL_CONFIG_DIR"
   fi
 

@@ -14,11 +14,8 @@ RUN addgroup consul && \
 
 # Set up certificates, base tools, and Consul.
 # libc6-compat is needed to symlink the shared libraries for ARM builds
-# For Consul 1.6.10 tzdata is pinned to alpine:3.8's 2020a-r0 because the 1.6.x series is built with Go 1.13 which can interpret the wrong timezone in alpine:3.12
-# See: https://gitlab.alpinelinux.org/alpine/aports/-/issues/12057, https://github.com/golang/go/issues/42138
 RUN set -eux && \
     apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec iputils jq libc6-compat && \
-    apk -X https://dl-cdn.alpinelinux.org/alpine/v3.8/main add tzdata=2020a-r0 && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \

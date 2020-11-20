@@ -2,7 +2,7 @@ FROM alpine:3.12
 LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
-ENV CONSUL_VERSION=1.8.6
+ENV CONSUL_VERSION=1.6.10
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com
@@ -16,6 +16,7 @@ RUN addgroup consul && \
 # libc6-compat is needed to symlink the shared libraries for ARM builds
 RUN set -eux && \
     apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec iputils jq libc6-compat && \
+    apk -X https://dl-cdn.alpinelinux.org/alpine/v3.8/main add tzdata=2020a-r0 && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \

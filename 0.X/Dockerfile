@@ -2,9 +2,8 @@ FROM alpine:3.12
 LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
-ARG CONSUL_RELEASE=1.9.1
-ENV CONSUL_VERSION=$CONSUL_RELEASE
-LABEL consul.version=$CONSUL_RELEASE
+ARG CONSUL_VERSION=1.9.1
+LABEL consul.version=$CONSUL_VERSION
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com
@@ -18,7 +17,7 @@ RUN addgroup consul && \
 # libc6-compat is needed to symlink the shared libraries for ARM builds
 RUN set -eux && \
     apk add --no-cache ca-certificates curl dumb-init gnupg libcap openssl su-exec iputils jq libc6-compat && \
-    gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
+    gpg --keyserver pool.sks-keyservers.net --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
     apkArch="$(apk --print-arch)" && \

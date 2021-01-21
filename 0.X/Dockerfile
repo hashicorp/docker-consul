@@ -3,7 +3,7 @@ LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
 ARG CONSUL_VERSION=1.9.2
-LABEL consul.version=$CONSUL_VERSION
+LABEL org.opencontainers.image.version=$CONSUL_VERSION
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com

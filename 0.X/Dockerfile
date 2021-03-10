@@ -13,7 +13,10 @@ ENV HASHICORP_RELEASES=https://releases.hashicorp.com
 RUN addgroup consul && \
     adduser -S -G consul consul
 
-RUN apk update && apk add ca-certificates  && update-ca-certificates  && apk --no-cache add openssl wget
+RUN apk update && \
+    apk add ca-certificates  && \
+    update-ca-certificates  && \
+    apk --no-cache add openssl wget
 
 # Set up certificates, base tools, and Consul.
 # libc6-compat is needed to symlink the shared libraries for ARM builds

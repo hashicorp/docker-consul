@@ -2,7 +2,7 @@ FROM alpine:3.13
 LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
-ARG CONSUL_VERSION=1.10.0-beta4
+ARG CONSUL_VERSION=1.8.11
 LABEL org.opencontainers.image.version=$CONSUL_VERSION
 
 # This is the location of the releases.

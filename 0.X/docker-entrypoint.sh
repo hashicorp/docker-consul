@@ -43,6 +43,15 @@ fi
 # below.
 CONSUL_DATA_DIR=/consul/data
 CONSUL_CONFIG_DIR=/consul/config
+CONSUL_EXTRA_CONFIG_DIR=/consul/extra
+
+# CONSUL_EXTRA_CONFIG is base64 encoded tar'ed data. It's contents are extracted 
+# and can be referenced by configuration provided via CONSUL_LOCAL_CONFIG.
+# The purpose is to avoid dealing with volumes just for the sake of configuration.
+mkdir -p "$CONSUL_EXTRA_CONFIG_DIR"
+if [ -n "$CONSUL_EXTRA_CONFIG" ]; then
+  echo "$CONSUL_EXTRA_CONFIG" | base64 -d | tar --extract --verbose --overwrite --directory "$CONSUL_EXTRA_CONFIG_DIR" --file -
+fi
 
 # You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
 # Consul configuration JSON without having to bind any volumes.
@@ -83,6 +92,9 @@ if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
     fi
     if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u consul)" ]; then
         chown consul:consul "$CONSUL_CONFIG_DIR"
+    fi
+    if [ "$(stat -c %u "$CONSUL_EXTRA_CONFIG_DIR")" != "$(id -u consul)" ]; then
+        chown --recursive consul:consul "$CONSUL_EXTRA_CONFIG_DIR"
     fi
 
     # If requested, set the capability to bind to privileged ports before

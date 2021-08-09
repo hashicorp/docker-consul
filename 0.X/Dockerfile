@@ -1,9 +1,24 @@
+# This Dockerfile creates a production release image for the project. This
+# downloads the release from releases.hashicorp.com and therefore requires that
+# the release is published before building the Docker image.
+#
+# We don't rebuild the software because we want the exact checksums and
+# binary signatures to match the software and our builds aren't fully
+# reproducible currently.
 FROM alpine:3.13
-LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>"
 
 # This is the release of Consul to pull in.
 ARG CONSUL_VERSION=1.10.1
-LABEL org.opencontainers.image.version=$CONSUL_VERSION
+
+LABEL org.opencontainers.image.version=$CONSUL_VERSION \
+      org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>" \
+      name="consul" \
+      maintainer="Consul Team <consul@hashicorp.com>" \
+      vendor="HashiCorp" \
+      version=$CONSUL_VERSION \
+      release=$CONSUL_VERSION \
+      summary="Consul is a datacenter runtime that provides service discovery, configuration, and orchestration." \
+      description="Consul is a datacenter runtime that provides service discovery, configuration, and orchestration."
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com

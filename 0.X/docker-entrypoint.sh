@@ -10,31 +10,33 @@ set -e
 # You can set CONSUL_BIND_INTERFACE to the name of the interface you'd like to
 # bind to and this will look up the IP and pass the proper -bind= option along
 # to Consul.
-CONSUL_BIND=
-if [ -n "$CONSUL_BIND_INTERFACE" ]; then
-  CONSUL_BIND_ADDRESS=$(ip -o -4 addr list $CONSUL_BIND_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
-  if [ -z "$CONSUL_BIND_ADDRESS" ]; then
-    echo "Could not find IP for interface '$CONSUL_BIND_INTERFACE', exiting"
-    exit 1
-  fi
+if [ -z "$CONSUL_BIND" ]; then
+  if [ -n "$CONSUL_BIND_INTERFACE" ]; then
+    CONSUL_BIND_ADDRESS=$(ip -o -4 addr list $CONSUL_BIND_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
+    if [ -z "$CONSUL_BIND_ADDRESS" ]; then
+      echo "Could not find IP for interface '$CONSUL_BIND_INTERFACE', exiting"
+      exit 1
+    fi
 
-  CONSUL_BIND="-bind=$CONSUL_BIND_ADDRESS"
-  echo "==> Found address '$CONSUL_BIND_ADDRESS' for interface '$CONSUL_BIND_INTERFACE', setting bind option..."
+    CONSUL_BIND="-bind=$CONSUL_BIND_ADDRESS"
+    echo "==> Found address '$CONSUL_BIND_ADDRESS' for interface '$CONSUL_BIND_INTERFACE', setting bind option..."
+  fi
 fi
 
 # You can set CONSUL_CLIENT_INTERFACE to the name of the interface you'd like to
 # bind client intefaces (HTTP, DNS, and RPC) to and this will look up the IP and
 # pass the proper -client= option along to Consul.
-CONSUL_CLIENT=
-if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
-  CONSUL_CLIENT_ADDRESS=$(ip -o -4 addr list $CONSUL_CLIENT_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
-  if [ -z "$CONSUL_CLIENT_ADDRESS" ]; then
-    echo "Could not find IP for interface '$CONSUL_CLIENT_INTERFACE', exiting"
-    exit 1
-  fi
+if [ -z "$CONSUL_CLIENT" ]; then
+  if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
+    CONSUL_CLIENT_ADDRESS=$(ip -o -4 addr list $CONSUL_CLIENT_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
+    if [ -z "$CONSUL_CLIENT_ADDRESS" ]; then
+      echo "Could not find IP for interface '$CONSUL_CLIENT_INTERFACE', exiting"
+      exit 1
+    fi
 
-  CONSUL_CLIENT="-client=$CONSUL_CLIENT_ADDRESS"
-  echo "==> Found address '$CONSUL_CLIENT_ADDRESS' for interface '$CONSUL_CLIENT_INTERFACE', setting client option..."
+    CONSUL_CLIENT="-client=$CONSUL_CLIENT_ADDRESS"
+    echo "==> Found address '$CONSUL_CLIENT_ADDRESS' for interface '$CONSUL_CLIENT_INTERFACE', setting client option..."
+  fi
 fi
 
 # CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The

@@ -16,7 +16,6 @@ LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>" \
       org.opencontainers.image.source="https://github.com/hashicorp/consul" \
       org.opencontainers.image.version=$CONSUL_VERSION \
       org.opencontainers.image.vendor="HashiCorp" \
-      org.opencontainers.image.licenses="MPL-2.0" \
       org.opencontainers.image.title="consul" \
       org.opencontainers.image.description="Consul is a datacenter runtime that provides service discovery, configuration, and orchestration."
 

@@ -10,15 +10,15 @@ FROM alpine:3.13
 # This is the release of Consul to pull in.
 ARG CONSUL_VERSION=1.10.2
 
-LABEL org.opencontainers.image.version=$CONSUL_VERSION \
-      org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>" \
-      name="consul" \
-      maintainer="Consul Team <consul@hashicorp.com>" \
-      vendor="HashiCorp" \
-      version=$CONSUL_VERSION \
-      release=$CONSUL_VERSION \
-      summary="Consul is a datacenter runtime that provides service discovery, configuration, and orchestration." \
-      description="Consul is a datacenter runtime that provides service discovery, configuration, and orchestration."
+LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>" \
+      org.opencontainers.image.url="https://www.consul.io/" \
+      org.opencontainers.image.documentation="https://www.consul.io/docs" \
+      org.opencontainers.image.source="https://github.com/hashicorp/consul" \
+      org.opencontainers.image.version=$CONSUL_VERSION \
+      org.opencontainers.image.vendor="HashiCorp" \
+      org.opencontainers.image.licenses="MPL-2.0" \
+      org.opencontainers.image.title="consul" \
+      org.opencontainers.image.description="Consul is a datacenter runtime that provides service discovery, configuration, and orchestration."
 
 # This is the location of the releases.
 ENV HASHICORP_RELEASES=https://releases.hashicorp.com

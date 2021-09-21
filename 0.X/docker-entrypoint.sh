@@ -43,8 +43,13 @@ fi
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
 # below.
-CONSUL_DATA_DIR=/consul/data
-CONSUL_CONFIG_DIR=/consul/config
+if [ -z "$CONSUL_DATA_DIR" ]; then
+  CONSUL_DATA_DIR=/consul/data
+fi
+
+if [ -z "$CONSUL_CONFIG_DIR" ]; then
+  CONSUL_CONFIG_DIR=/consul/config
+fi
 
 # You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
 # Consul configuration JSON without having to bind any volumes.
@@ -55,46 +60,55 @@ fi
 # If the user is trying to run Consul directly with some arguments, then
 # pass them to Consul.
 if [ "${1:0:1}" = '-' ]; then
-    set -- consul "$@"
+  set -- consul "$@"
 fi
 
 # Look for Consul subcommands.
 if [ "$1" = 'agent' ]; then
-    shift
-    set -- consul agent \
-        -data-dir="$CONSUL_DATA_DIR" \
-        -config-dir="$CONSUL_CONFIG_DIR" \
-        $CONSUL_BIND \
-        $CONSUL_CLIENT \
-        "$@"
+  shift
+  set -- consul agent \
+    -data-dir="$CONSUL_DATA_DIR" \
+    -config-dir="$CONSUL_CONFIG_DIR" \
+    $CONSUL_BIND \
+    $CONSUL_CLIENT \
+    "$@"
 elif [ "$1" = 'version' ]; then
-    # This needs a special case because there's no help output.
-    set -- consul "$@"
+  # This needs a special case because there's no help output.
+  set -- consul "$@"
 elif consul --help "$1" 2>&1 | grep -q "consul $1"; then
-    # We can't use the return code to check for the existence of a subcommand, so
-    # we have to use grep to look for a pattern in the help output.
-    set -- consul "$@"
+  # We can't use the return code to check for the existence of a subcommand, so
+  # we have to use grep to look for a pattern in the help output.
+  set -- consul "$@"
 fi
 
 # If we are running Consul, make sure it executes as the proper user.
 if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
-    # If the data or config dirs are bind mounted then chown them.
-    # Note: This checks for root ownership as that's the most common case.
-    if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "$(id -u consul)" ]; then
-        chown consul:consul "$CONSUL_DATA_DIR"
-    fi
-    if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "$(id -u consul)" ]; then
-        chown consul:consul "$CONSUL_CONFIG_DIR"
-    fi
+  # Allow to setup user and group via envrironment
+  if [ -z "$CONSUL_UID" ]; then
+    CONSUL_UID="$(id -u consul)"
+  fi
 
-    # If requested, set the capability to bind to privileged ports before
-    # we drop to the non-root user. Note that this doesn't work with all
-    # storage drivers (it won't work with AUFS).
-    if [ ! -z ${CONSUL_ALLOW_PRIVILEGED_PORTS+x} ]; then
-        setcap "cap_net_bind_service=+ep" /bin/consul
-    fi
+  if [ -z "$CONSUL_GID" ]; then
+    CONSUL_GID="$(id -g consul)"
+  fi
 
-    set -- su-exec consul:consul "$@"
+  # If the data or config dirs are bind mounted then chown them.
+  # Note: This checks for root ownership as that's the most common case.
+  if [ "$(stat -c %u "$CONSUL_DATA_DIR")" != "${CONSUL_UID}" ]; then
+    chown ${CONSUL_UID}:${CONSUL_GID} "$CONSUL_DATA_DIR"
+  fi
+  if [ "$(stat -c %u "$CONSUL_CONFIG_DIR")" != "${CONSUL_UID}" ]; then
+    chown ${CONSUL_UID}:${CONSUL_GID} "$CONSUL_CONFIG_DIR"
+  fi
+
+  # If requested, set the capability to bind to privileged ports before
+  # we drop to the non-root user. Note that this doesn't work with all
+  # storage drivers (it won't work with AUFS).
+  if [ ! -z ${CONSUL_ALLOW_PRIVILEGED_PORTS+x} ]; then
+    setcap "cap_net_bind_service=+ep" /bin/consul
+  fi
+
+  set -- su-exec ${CONSUL_UID}:${CONSUL_GID} "$@"
 fi
 
 exec "$@"

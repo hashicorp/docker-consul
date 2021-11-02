@@ -8,7 +8,7 @@
 FROM alpine:3.13
 
 # This is the release of Consul to pull in.
-ARG CONSUL_VERSION=1.10.3
+ARG CONSUL_VERSION=1.11.0-beta2
 
 LABEL org.opencontainers.image.authors="Consul Team <consul@hashicorp.com>" \
       org.opencontainers.image.url="https://www.consul.io/" \

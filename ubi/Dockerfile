@@ -70,7 +70,8 @@ RUN groupadd consul && \
 # with /consul/config as the configuration directory so you can add additional
 # config files in that location.
 # In addition, change the group of the /consul directory to 0 since OpenShift
-# will always execute the container with group 0.
+# will always execute the container with group 0
+# (see https://docs.openshift.com/container-platform/4.7/openshift_images/create-images.html#images-create-guide-openshift_create-images).
 RUN mkdir -p /consul/data && \
     mkdir -p /consul/config && \
     chown -R consul /consul && \

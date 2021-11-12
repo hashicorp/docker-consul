@@ -9,7 +9,7 @@
 # This Dockerfile is different from the regular Dockerfile because it's
 # based on Red Hat's UBI image. This Dockerfile is used to build a Consul
 # image for use on OpenShift.
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
 
 # This is the release of Consul to pull in.
 ARG CONSUL_VERSION=1.10.0

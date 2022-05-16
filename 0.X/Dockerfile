@@ -5,7 +5,7 @@
 # We don't rebuild the software because we want the exact checksums and
 # binary signatures to match the software and our builds aren't fully
 # reproducible currently.
-FROM alpine:3.13
+FROM alpine:3.15
 
 # This is the release of Consul to pull in.
 ARG CONSUL_VERSION=1.12.0

@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # This Dockerfile creates a production release image for the project. This
 # downloads the release from releases.hashicorp.com and therefore requires that
 # the release is published before building the Docker image.

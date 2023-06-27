@@ -42,6 +42,13 @@ if [ -z "$CONSUL_CLIENT" ]; then
   fi
 fi
 
+# You can set CONSUL_DOCKER_API for docker.sock file
+# Default find docker.sock in /var/run/ if exist set permission
+# Use -e CONSUL_DOCKER_API <your-file> if want use with environment
+if [ -n "$CONSUL_DOCKER_API" ] || [ -S /var/run/docker.sock ]; then
+  chgrp consul ${CONSUL_DOCKER_API:-/var/run/docker.sock}
+fi
+
 # CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The
 # CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
 # config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG

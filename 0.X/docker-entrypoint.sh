@@ -4,6 +4,26 @@
 
 set -e
 
+#ADD acl variables in config/consul.json
+
+cat > /consul/config/consul.json <<EOF
+{
+"datacenter": "$DATACENTER",
+"data_dir": "/consul/data/",
+"log_level": "$LOG_LEVEL",
+"node_name": "$HOSTNAME",
+"server": true,
+"bootstrap_expect": 1,
+"client_addr": "0.0.0.0",
+"ui": $UI_ENABLE,
+"acl_datacenter": "$DATACENTER",
+"acl_master_token": "$ACL_MASTER_TOKEN", 
+"acl_default_policy": "$ACL_DEFAULT_POLICY",
+"acl_down_policy": "$ACL_DOWN_POLICY",
+"acl_agent_token": "$ACL_AGENT_TOKEN"
+}
+EOF
+
 # Note above that we run dumb-init as PID 1 in order to reap zombie processes
 # as well as forward signals to all processes in its session. Normally, sh
 # wouldn't do either of these functions so we'd leak zombies as well as do
